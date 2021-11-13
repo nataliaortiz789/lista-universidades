@@ -1,0 +1,27 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #f2f2f2;
+  font-family: "Yuji Syuku", serif;
+  color: #000;
+}
+
+.blog-header-logo {
+  font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+  font-size: 2.25rem;
+  border-bottom: 3px solid #000;
+}
+
+h5 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #000;
+}
+
+span {
+  font-size: 1em;
+  margin-right: 20px;
+}
