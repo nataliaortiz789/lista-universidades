@@ -5,7 +5,7 @@ var lista = [];
 const options = {
     method: "GET",
     headers: {
-        origin: "dominio.com"
+        origin: "https://github.com/"
     }
 };
 
