@@ -2,17 +2,24 @@
  * Lista para los id de los items del acordeon
  */
 var lista = [];
+const options = {
+    method: "GET",
+    headers: {
+        origin: "dominio.com"
+    }
+};
+
 
 /**
  * funcion que lee un archivo json
  * @param {*} url 
  * @returns 
  */
-async function leerJSON(url) {
+async function leerJSON(url, options) {
     try {
-        let response = await fetch(url);
-        let user = await response.json();
-        return user;
+        let response = await fetch(url, options);
+        let data = await response.json();
+        return data;
     } catch (error) {
         alert(error);
     }
@@ -23,10 +30,12 @@ async function leerJSON(url) {
  * Funcion que lista los datos de las universidades
  */
 function findAllUniversitiesTables() {
-    let url = "https://cors-anywhere.herokuapp.com/http://universities.hipolabs.com/search?country=colombia";
+    let url="https://cors-anywhere.herokuapp.com/http://universities.hipolabs.com/search?country=colombia";
     let acordeon = "";
-    leerJSON(url).then(datos => {
-        for (let i = 0; i < datos.length; i++) {
+    leerJSON(url, options).then(data => {
+        const ids = data.map(o => o.name);
+        const filtered = data.filter(({name}, index) => !ids.includes(name, index + 1))
+        for (let i = 0; i < filtered.length; i++) {
             acordeon += /*html*/ `
         <tr>
             <td>
@@ -34,8 +43,8 @@ function findAllUniversitiesTables() {
                     <h4 class="accordion-header" id="flush-heading${i}">
                         <button class="accordion-button collapsed" type="button"
                             data-bs-toggle="collapse" data-bs-target="#flush-collapse${i}"
-                            aria-expanded="false" aria-controls="flush-collapse${i}" onclick="search(${i})">
-                            ${datos[i].name}
+                            aria-expanded="false" aria-controls="flush-collapse${i}" onclick="search('${i}', '${filtered[i].web_pages}')">
+                            ${filtered[i].name}
                         </button>
                     </h4>
                     <div id="flush-collapse${i}" class="accordion-collapse collapse"
@@ -54,11 +63,13 @@ function findAllUniversitiesTables() {
     });
 }
 
+
 /**
  * funcion que busca los datos de administrador de una universidad
  * @param {*} id 
+ * @param {*} site
  */
-function getAdmin(id) {
+function getAdmin(id, site) {
     let url = "https://randomuser.me/api/";
     let contenido = "";
     leerJSON(url).then(datos => {
@@ -67,8 +78,7 @@ function getAdmin(id) {
             <div class="row">
                 <div class="col-md-4 col-sm-12 d-flex justify-content-center align-items-center">
                     <div class="">
-                        <img src="${element.picture.large}" class="img-thumbnail" alt="img-thumbnail"
-                            style="border-radius: 50%; object-fit:cover:cover;">
+                        <img src="${element.picture.large}" class="img-thumbnail profile" alt="img-thumbnail">
                     </div>
                 </div>
                 <div class="col">
@@ -76,16 +86,20 @@ function getAdmin(id) {
                         <table class="table table-hover">
                             <tbody>
                                 <tr>
-                                    <th>Nombre:</th>
+                                    <th>Dirección Web:</th>
+                                    <td>${site}</td>
+                                </tr>
+                                <tr>
+                                    <th>Código QR:</th>
+                                    <td><img src="https://api.qrserver.com/v1/create-qr-code/?size=50x50&data=${site}" alt=""></td>
+                                </tr>
+                                <tr>
+                                    <th>Nombre Administrador:</th>
                                     <td>${element.name.title + " " + element.name.first + " " + element.name.last}</td>
                                 </tr>
                                 <tr>
                                     <th>Email:</th>
                                     <td>${element.email}</td>
-                                </tr>
-                                <tr>
-                                    <th>Dirección:</th>
-                                    <td>${element.location.street.name + " " + element.location.street.number}</td>
                                 </tr>
                                 <tr>
                                     <th>Pais:</th>
@@ -99,10 +113,6 @@ function getAdmin(id) {
                                     <th>Ciudad:</th>
                                     <td>${element.location.city}</td>
                                 </tr>
-                                <tr>
-                                    <th>Codigo Postal:</th>
-                                    <td>${element.location.postcode}</td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -114,14 +124,15 @@ function getAdmin(id) {
     });
 }
 
+
 /**
  * funcion que controla el acordeon para mostrar los datos de un administrador
  * @param {*} id 
  */
-function search(id) {
+function search(id, site) {
     if (!lista.find(element => element === id)) {
         lista.push(id);
-        getAdmin(id);
+        getAdmin(id, site);
     }
 }
 
