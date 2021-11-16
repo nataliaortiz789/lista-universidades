@@ -2,12 +2,6 @@
  * Lista para los id de los items del acordeon
  */
 var lista = [];
-const options = {
-    method: "GET",
-    headers: {
-        origin: "https://github.com"
-    }
-};
 
 
 /**
@@ -15,9 +9,9 @@ const options = {
  * @param {*} url 
  * @returns 
  */
-async function leerJSON(url, options) {
+async function leerJSON(url) {
     try {
-        let response = await fetch(url, options);
+        let response = await fetch(url);
         let data = await response.json();
         return data;
     } catch (error) {
@@ -30,9 +24,9 @@ async function leerJSON(url, options) {
  * Funcion que lista los datos de las universidades
  */
 function findAllUniversitiesTables() {
-    let url="https://cors-anywhere.herokuapp.com/http://universities.hipolabs.com/search?country=colombia";
+    let url="https://programacion-web---i-sem-2019.gitlab.io/persistencia/json_web/json/universidades.json";
     let acordeon = "";
-    leerJSON(url, options).then(data => {
+    leerJSON(url).then(data => {
         const ids = data.map(o => o.name);
         const filtered = data.filter(({name}, index) => !ids.includes(name, index + 1))
         for (let i = 0; i < filtered.length; i++) {
